@@ -11,89 +11,92 @@ import java.util.Scanner;
 final class Planner {
 	private static HashMap<String, Float> parseList(String s) {
 		HashMap<String, Float> map = new HashMap<>();
-		for (String os : s.split(", ")) {
-			System.out.printf("Parsing \"%s\"...%n", os);
-			int x = os.indexOf('x');
-			if (x != -1)
-				map.put(os.substring(x + 1), Float.parseFloat(os.substring(0, x)));
+		for (String split : s.split(", ")) {
+			System.out.printf("Parsing \"%s\"...%n", split);
+			int i = split.indexOf('x');
+			if (i != -1)
+				map.put(split.substring(i + 1), Float.parseFloat(split.substring(0, i)));
 		}
 		return map;
 	}
 
 	public static void main(String[] args) {
-		Scanner s = new Scanner(Planner.class.getResourceAsStream("/recipes.tsv")).useDelimiter("\t|\r\n");
-		s.nextLine();
-		HashMap<String, Recipe[]> rsByIn = new HashMap<>();
-		while (s.hasNextLine()) {
-			Recipe r = new Recipe(s.next(), parseList(s.next()), s.next(), parseList(s.next()));
-			r.ins.keySet().forEach(o -> {
-				Recipe[] rs = rsByIn.get(o);
-				if (rs == null)
-					rsByIn.put(o, new Recipe[] { r });
+		Scanner scan = new Scanner(Planner.class.getResourceAsStream("/recipes.tsv")).useDelimiter("\t|\r\n");
+		scan.nextLine();
+		HashMap<String, Recipe[]> recipesByIn = new HashMap<>();
+		while (scan.hasNextLine()) {
+			Recipe recipe = new Recipe(scan.next(), parseList(scan.next()), scan.next(), parseList(scan.next()));
+			recipe.ins.keySet().forEach(o -> {
+				Recipe[] recipes = recipesByIn.get(o);
+				if (recipes == null)
+					recipesByIn.put(o, new Recipe[] { recipe });
 				else {
-					int l = rs.length;
-					rs = Arrays.copyOf(rs, l + 1);
-					rs[l] = r;
-					rsByIn.put(o, rs);
+					int l = recipes.length;
+					recipes = Arrays.copyOf(recipes, l + 1);
+					recipes[l] = recipe;
+					recipesByIn.put(o, recipes);
 				}
 			});
 		}
-		s.close();
+		scan.close();
 		System.out.println("Recipies by input:");
-		rsByIn.forEach((k, v) -> System.out.printf("\t%27s: %s%n", k, Arrays.toString(v)));
-		s = new Scanner(Planner.class.getResourceAsStream("/machines.tsv")).useDelimiter("\t|\n");
-		s.nextLine();
-		HashMap<String, Short> machines = new HashMap<>();
-		while (s.hasNextLine()) {
-			String st = s.next();
-			machines.put(st, s.nextShort());
-		}
-		s.close();
-		System.out.printf("Machines: %s%n", machines);
-		s = new Scanner(Planner.class.getResourceAsStream("/rates.tsv")).useDelimiter("\t|\n");
-		s.nextLine();
+		recipesByIn.forEach((key, val) -> System.out.printf("\t%27s: %s%n", key, Arrays.toString(val)));
+		scan = new Scanner(Planner.class.getResourceAsStream("/machines.tsv")).useDelimiter("\t|\n");
+		scan.nextLine();
+		HashMap<String, Short> machPow = new HashMap<>();
+		while (scan.hasNextLine())
+			machPow.put(scan.next(), scan.nextShort());
+		scan.close();
+		System.out.printf("Machines: %s%n", machPow);
+		scan = new Scanner(Planner.class.getResourceAsStream("/rates.tsv")).useDelimiter("\t|\n");
+		scan.nextLine();
 		HashMap<String, Integer> rates = new HashMap<>();
-		Queue<String> q = new LinkedList<>();
+		Queue<String> procQue = new LinkedList<>();
 		HashSet<String> qHash = new HashSet<>();
-		HashMap<String, Float> iWeight = new HashMap<>();
-		while (s.hasNextLine()) {
-			String i = s.next();
-			int r = s.nextInt();
-			rates.put(i, r);
-			qHash.add(i);
-			q.offer(i);
-			iWeight.put(i, 10000f / r);
+		HashMap<String, Float> weights = new HashMap<>();
+		while (scan.hasNextLine()) {
+			String item = scan.next();
+			int rate = scan.nextInt();
+			rates.put(item, rate);
+			qHash.add(item);
+			procQue.offer(item);
+			weights.put(item, 10000f / rate);
 		}
-		s.close();
-		System.out.printf("Rates: %s%nWeights: %s%n", rates, iWeight);
+		scan.close();
+		System.out.printf("Rates: %s%nWeights: %s%n", rates, weights);
 		HashMap<String, Recipe> bestRec = new HashMap<>();
-		while (!q.isEmpty()) {
-			String calcI = q.poll();
+		while (!procQue.isEmpty()) {
+			String calcI = procQue.poll();
 			qHash.remove(calcI);
-			rLoop: for (Recipe r : rsByIn.get(calcI)) {
-				float sum = 0;
-				for (Entry<String, Float> e : r.ins.entrySet()) {
-					Float iw = iWeight.get(e.getKey());
-					if (iw == null)
-						continue rLoop;
-					sum += iw * e.getValue();
-				}
-				System.out.printf("%f: %s%n", sum, r);
-				for (Entry<String, Float> e : r.outs.entrySet()) {
-					String it = e.getKey();
-					float iw = sum / e.getValue();
-					Float c = iWeight.get(it);
-					if ((c == null
-							|| (iw < c || (iw == c && machines.get(r.machine) < machines.get(bestRec.get(it).machine))))
-							&& !rates.containsKey(it)) {
-						iWeight.put(it, iw);
-						bestRec.put(it, r);
-						System.out.println("Best Recipes updated:");
-						bestRec.forEach((k, v) -> System.out.printf("%26s (%f): %s%n", k, iWeight.get(k), v));
+			System.out.printf("Calculating %s...%n", calcI);
+			Recipe[] recipes = recipesByIn.get(calcI);
+			if (recipes != null)
+				rLoop: for (Recipe recipe : recipes) {
+					float sum = 0;
+					for (Entry<String, Float> ent : recipe.ins.entrySet()) {
+						Float iweight = weights.get(ent.getKey());
+						if (iweight == null)
+							continue rLoop;
+						sum += iweight * ent.getValue();
 					}
+					System.out.printf("%f: %s%n", sum, recipe);
+					for (Entry<String, Float> ent : recipe.outs.entrySet()) {
+						String item = ent.getKey();
+						float iweight = sum / ent.getValue();
+						Float curWeight = weights.get(item);
+						if ((curWeight == null || (iweight < curWeight || (iweight == curWeight
+								&& machPow.get(recipe.machine) < machPow.get(bestRec.get(item).machine))))
+								&& !rates.containsKey(item)) {
+							weights.put(item, iweight);
+							bestRec.put(item, recipe);
+							if (qHash.add(item))
+								procQue.offer(item);
+							System.out.printf("Best Recipes updated (%s):%n", item);
+							bestRec.forEach((k, v) -> System.out.printf("%26s (%f): %s%n", k, weights.get(k), v));
+						}
+					}
+					System.out.printf("Weights: %s%n", weights);
 				}
-				System.out.printf("Weights: %s%n", iWeight);
-			}
 		}
 	}
 
