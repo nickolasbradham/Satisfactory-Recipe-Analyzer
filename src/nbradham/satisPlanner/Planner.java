@@ -9,21 +9,15 @@ import java.util.Queue;
 import java.util.Scanner;
 
 final class Planner {
-	private static HashMap<String, Float> parseList(String s) {
-		HashMap<String, Float> map = new HashMap<>();
-		for (String split : s.split(", ")) {
-			System.out.printf("Parsing \"%s\"...%n", split);
-			int i = split.indexOf('x');
-			if (i != -1)
-				map.put(split.substring(i + 1), Float.parseFloat(split.substring(0, i)));
-		}
-		return map;
-	}
 
-	public static void main(String[] args) {
+	private final Queue<String> procQue = new LinkedList<>();
+	private final HashSet<String> qHash = new HashSet<>();
+
+	private void start() {
 		Scanner scan = new Scanner(Planner.class.getResourceAsStream("/recipes.tsv")).useDelimiter("\t|\r\n");
 		scan.nextLine();
 		HashMap<String, Recipe[]> recipesByIn = new HashMap<>();
+		HashMap<String, Float> weights = new HashMap<>();
 		while (scan.hasNextLine()) {
 			Recipe recipe = new Recipe(scan.next(), parseList(scan.next()), scan.next(), parseList(scan.next()));
 			recipe.ins.keySet().forEach(o -> {
@@ -37,6 +31,11 @@ final class Planner {
 					recipesByIn.put(o, recipes);
 				}
 			});
+			if (recipe.ins.isEmpty())
+				recipe.outs.keySet().forEach(item -> {
+					forceToQueue(item);
+					weights.put(item, Float.MIN_NORMAL);
+				});
 		}
 		scan.close();
 		System.out.println("Recipies by input:");
@@ -50,23 +49,17 @@ final class Planner {
 		System.out.printf("Machines: %s%n", machPow);
 		scan = new Scanner(Planner.class.getResourceAsStream("/rates.tsv")).useDelimiter("\t|\n");
 		scan.nextLine();
-		HashMap<String, Integer> rates = new HashMap<>();
-		Queue<String> procQue = new LinkedList<>();
-		HashSet<String> qHash = new HashSet<>();
-		HashMap<String, Float> weights = new HashMap<>();
 		while (scan.hasNextLine()) {
 			String item = scan.next();
 			int rate = scan.nextInt();
-			rates.put(item, rate);
-			qHash.add(item);
-			procQue.offer(item);
+			forceToQueue(item);
 			weights.put(item, 10000f / rate);
 		}
 		scan.close();
-		System.out.printf("Rates: %s%nWeights: %s%n", rates, weights);
+		System.out.printf("Weights: %s%n", weights);
 		HashMap<String, Recipe> bestRec = new HashMap<>();
-		while (!procQue.isEmpty()) {
-			String calcI = procQue.poll();
+		String calcI;
+		while ((calcI = procQue.poll()) != null) {
 			qHash.remove(calcI);
 			System.out.printf("Calculating %s...%n", calcI);
 			Recipe[] recipes = recipesByIn.get(calcI);
@@ -82,22 +75,40 @@ final class Planner {
 					System.out.printf("%f: %s%n", sum, recipe);
 					for (Entry<String, Float> ent : recipe.outs.entrySet()) {
 						String item = ent.getKey();
-						float iweight = sum / ent.getValue();
+						float iWeight = sum / ent.getValue();
 						Float curWeight = weights.get(item);
-						if ((curWeight == null || (iweight < curWeight || (iweight == curWeight
-								&& machPow.get(recipe.machine) < machPow.get(bestRec.get(item).machine))))
-								&& !rates.containsKey(item)) {
-							weights.put(item, iweight);
+						if ((curWeight == null || (iWeight < curWeight || (iWeight == curWeight
+								&& machPow.get(recipe.machine) < machPow.get(bestRec.get(item).machine))))) {
 							bestRec.put(item, recipe);
 							if (qHash.add(item))
 								procQue.offer(item);
-							System.out.printf("Best Recipes updated (%s):%n", item);
-							bestRec.forEach((k, v) -> System.out.printf("%26s (%f): %s%n", k, weights.get(k), v));
+							System.out.printf("Best Recipes updated (%s [%f -> %f]):%n", item, weights.put(item, iWeight), iWeight);
+							bestRec.forEach((k, v) -> System.out.printf("%27s (%f): %s%n", k, weights.get(k), v));
 						}
 					}
 					System.out.printf("Weights: %s%n", weights);
 				}
 		}
+	}
+
+	private void forceToQueue(String item) {
+		procQue.offer(item);
+		qHash.add(item);
+	}
+
+	private static HashMap<String, Float> parseList(String s) {
+		HashMap<String, Float> map = new HashMap<>();
+		for (String split : s.split(", ")) {
+			System.out.printf("Parsing \"%s\"...%n", split);
+			int i = split.indexOf('x');
+			if (i != -1)
+				map.put(split.substring(i + 1), Float.parseFloat(split.substring(0, i)));
+		}
+		return map;
+	}
+
+	public static void main(String[] args) {
+		new Planner().start();
 	}
 
 	private static final record Recipe(String name, HashMap<String, Float> ins, String machine,

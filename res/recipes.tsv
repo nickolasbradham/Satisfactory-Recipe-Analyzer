@@ -148,7 +148,7 @@ Alternate: Coke Steel Ingot	75xIron Ore, 75xPetroleum Coke	Foundry	100xSteel Ing
 Alternate: Compacted Steel Ingot	5xIron Ore, 2.5xCompacted Coal	Foundry	10xSteel Ingot
 Alternate: Copper Alloy Ingot	50xCopper Ore, 50xIron Ore	Foundry	100xCopper Ingot
 Alternate: Fused Quartz Crystal	75xRaw Quartz, 36xCoal	Foundry	54xQuartz Crystal
-Alternate: Iron Alloy Ingot	40xIron Ore, 10xCopper Ore	Foundry	75xIron Ore
+Alternate: Iron Alloy Ingot	40xIron Ore, 10xCopper Ore	Foundry	75xIron Ingot
 Alternate: Molded Beam	120xSteel Ingot, 80xConcrete	Foundry	45xSteel Beam
 Alternate: Molded Steel Pipe	50xSteel Ingot, 30xConcrete	Foundry	50xSteel Pipe
 Alternate: Solid Steel Ingot	40xIron Ingot, 40xCoal	Foundry	60xSteel Ingot
@@ -258,7 +258,6 @@ Alternate: Turbo Heavy Fuel	37.5xHeavy Oil Residue, 30xCompacted Coal	Refinery	3
 Alternate: Wet Concrete	120xLimestone, 100xWater	Refinery	80xConcrete
 Alumina Solution	120xBauxite, 180xWater	Refinery	120xAlumina Solution, 50xSilica
 Aluminum Scrap	240xAlumina Solution, 120xCoal	Refinery	360xAluminum Scrap, 120xWater
-Dissolved Silica	120xRaw Quartz, 10xNitric Acid	Refinery	75xQuartz Crystal, 60xDissolved Silica
 Fuel	60xCrude Oil	Refinery	40xFuel, 30xPolymer Resin
 Ionized Fuel	40xRocket Fuel, 2.5xPower Shard	Refinery	40xIonized Fuel, 5xCompacted Coal
 Liquid Biofuel	90xSolid Biofuel, 45xWater	Refinery	60xLiquid Biofuel
