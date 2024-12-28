@@ -235,7 +235,7 @@ Plutonium Pellet	100xNon-Fissile Uranium, 25xUranium Waste	Particle Accelerator	
 AI Expansion Server	4xMagnetic Field Generator, 4xNeural-Quantum Processor, 4xSuperposition Oscillator, 100xExcited Photonic Matter	Quantum Encoder	4xAI Expansion Server, 100xDark Matter Residue
 Alien Power Matrix	12.5xSAM Fluctuator, 7.5xPower Shard, 7.5xSuperposition Oscillator, 60xExcited Photonic Matter	Quantum Encoder	2.5xAlien Power Matrix, 60xDark Matter Residue
 Ficsonium Fuel Rod	5xFicsonium, 5xElectromagnetic Control Rod, 100xFicsite Trigon, 50xExcited Photonic Matter	Quantum Encoder	2.5xFicsonium Fuel Rod, 50xDark Matter Residue
-Ficsonium Fuel Rod	5xFicsonium, 5xElectromagnetic Control Rod, 100xFicsite Trigon, 50xExcited Photonic Matter	Quantum Encoder	2.5xFicsonium Fuel Rod, 50x Dark Matter Residue
+Ficsonium Fuel Rod	5xFicsonium, 5xElectromagnetic Control Rod, 100xFicsite Trigon, 50xExcited Photonic Matter	Quantum Encoder	2.5xFicsonium Fuel Rod, 50xDark Matter Residue
 Neural-Quantum Processor	15xTime Crystal, 3xSupercomputer, 45xFicsite Trigon, 75xExcited Photonic Matter	Quantum Encoder	3xNeural-Quantum Processor, 75xDark Matter Residue
 Superposition Oscillator	30xDark Matter Crystal, 5xCrystal Oscillator, 45xAlclad Aluminum Sheet, 125xExcited Photonic Matter	Quantum Encoder	5xSuperposition Oscillator, 125xDark Matter Residue
 Synthetic Power Shard	10xTime Crystal, 10xDark Matter Crystal, 60xQuartz Crystal, 60xExcited Photonic Matter	Quantum Encoder	5xPower Shard, 60xDark Matter Residue
@@ -247,7 +247,7 @@ Alternate: Leached Copper Ingot	45xCopper Ore, 25xSulfuric Acid	Refinery	110xCop
 Alternate: Leached Iron ingot	50xIron Ore, 10xSulfuric Acid	Refinery	100xIron Ingot
 Alternate: Polymer Resin	60xCrude Oil	Refinery	130xPolymer Resin, 20xHeavy Oil Residue
 Alternate: Pure Caterium Ingot	24xCaterium Ore, 24xWater	Refinery	12xCaterium Ingot
-Alternate: Pure Copper Ingot	15xCopper Ingot, 10xWater	Refinery	37.5xCopper Ingot
+Alternate: Pure Copper Ingot	15xCopper Ore, 10xWater	Refinery	37.5xCopper Ingot
 Alternate: Pure Iron Ingot	35xIron Ore, 20xWater	Refinery	65xIron Ingot
 Alternate: Pure Quartz Crystal	67.5xRaw Quartz, 37.5xWater	Refinery	52.5xQuartz Crystal
 Alternate: Quartz Purification	120xRaw Quartz, 10xNitric Acid	Refinery	75xQuartz Crystal, 60xDissolved Silica

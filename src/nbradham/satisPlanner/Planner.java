@@ -40,14 +40,17 @@ final class Planner {
 		scan.close();
 		System.out.println("Recipies by input:");
 		recipesByIn.forEach((key, val) -> System.out.printf("\t%27s: %s%n", key, Arrays.toString(val)));
-		scan = new Scanner(Planner.class.getResourceAsStream("/machines.tsv")).useDelimiter("\t|\n");
+		scan = new Scanner(Planner.class.getResourceAsStream("/machines.tsv")).useDelimiter("\t|\r\n");
 		scan.nextLine();
 		HashMap<String, Short> machPow = new HashMap<>();
-		while (scan.hasNextLine())
-			machPow.put(scan.next(), scan.nextShort());
+		while (scan.hasNextLine()) {
+			String in = scan.next();
+			System.out.printf("Parsing %s...%n", in);
+			machPow.put(in, scan.nextShort());
+		}
 		scan.close();
 		System.out.printf("Machines: %s%n", machPow);
-		scan = new Scanner(Planner.class.getResourceAsStream("/rates.tsv")).useDelimiter("\t|\n");
+		scan = new Scanner(Planner.class.getResourceAsStream("/rates.tsv")).useDelimiter("\t|\r\n");
 		scan.nextLine();
 		while (scan.hasNextLine()) {
 			String item = scan.next();
@@ -82,13 +85,16 @@ final class Planner {
 							bestRec.put(item, recipe);
 							if (qHash.add(item))
 								procQue.offer(item);
-							System.out.printf("Best Recipes updated (%s [%f -> %f]):%n", item, weights.put(item, iWeight), iWeight);
+							System.out.printf("Best Recipes updated (%s [%f -> %f]):%n", item,
+									weights.put(item, iWeight), iWeight);
 							bestRec.forEach((k, v) -> System.out.printf("%27s (%f): %s%n", k, weights.get(k), v));
 						}
 					}
 					System.out.printf("Weights: %s%n", weights);
 				}
 		}
+		System.out.println("Best Recipes:");
+		bestRec.forEach((k, v) -> System.out.printf("%27s: %s%n", k, v.name));
 	}
 
 	private void forceToQueue(String item) {
