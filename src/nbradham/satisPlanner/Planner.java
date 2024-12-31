@@ -63,45 +63,38 @@ final class Planner {
 		scan.close();
 		System.out.printf("Weights: %s%n", weights);
 		HashMap<String, Recipe> bestRec = new HashMap<>();
-		Thread[] threads = new Thread[Runtime.getRuntime().availableProcessors()];
-		for (byte n = 0; n < threads.length; ++n)
-			(threads[n] = new Thread(() -> {
-				String calcI;
-				while ((calcI = procQue.poll()) != null) {
-					qHash.remove(calcI);
-					System.out.printf("Calculating %s...%n", calcI);
-					Recipe[] recipes = recipesByIn.get(calcI);
-					if (recipes != null)
-						rLoop: for (Recipe recipe : recipes) {
-							float sum = 0;
-							for (Entry<String, Float> ent : recipe.ins.entrySet()) {
-								Float iweight = weights.get(ent.getKey());
-								if (iweight == null)
-									continue rLoop;
-								sum += iweight * ent.getValue();
-							}
-							System.out.printf("%f: %s%n", sum, recipe);
-							for (Entry<String, Float> ent : recipe.outs.entrySet()) {
-								String item = ent.getKey();
-								float iWeight = sum / ent.getValue();
-								Float curWeight = weights.get(item);
-								if ((curWeight == null || (iWeight < curWeight || (iWeight == curWeight
-										&& machPow.get(recipe.machine) < machPow.get(bestRec.get(item).machine))))) {
-									bestRec.put(item, recipe);
-									if (qHash.add(item))
-										procQue.offer(item);
-									System.out.printf("Best Recipes updated (%s [%f -> %f]):%n", item,
-											weights.put(item, iWeight), iWeight);
-									bestRec.forEach(
-											(k, v) -> System.out.printf("%27s (%f): %s%n", k, weights.get(k), v));
-								}
-							}
-							System.out.printf("Weights: %s%n", weights);
+		String calcI;
+		while ((calcI = procQue.poll()) != null) {
+			qHash.remove(calcI);
+			System.out.printf("Calculating %s...%n", calcI);
+			Recipe[] recipes = recipesByIn.get(calcI);
+			if (recipes != null)
+				rLoop: for (Recipe recipe : recipes) {
+					float sum = 0;
+					for (Entry<String, Float> ent : recipe.ins.entrySet()) {
+						Float iweight = weights.get(ent.getKey());
+						if (iweight == null)
+							continue rLoop;
+						sum += iweight * ent.getValue();
+					}
+					System.out.printf("%f: %s%n", sum, recipe);
+					for (Entry<String, Float> ent : recipe.outs.entrySet()) {
+						String item = ent.getKey();
+						float iWeight = sum / ent.getValue();
+						Float curWeight = weights.get(item);
+						if ((curWeight == null || (iWeight < curWeight || (iWeight == curWeight
+								&& machPow.get(recipe.machine) < machPow.get(bestRec.get(item).machine))))) {
+							bestRec.put(item, recipe);
+							if (qHash.add(item))
+								procQue.offer(item);
+							System.out.printf("Best Recipes updated (%s [%f -> %f]):%n", item,
+									weights.put(item, iWeight), iWeight);
+							bestRec.forEach((k, v) -> System.out.printf("%27s (%f): %s%n", k, weights.get(k), v));
 						}
+					}
+					System.out.printf("Weights: %s%n", weights);
 				}
-			})).start();
-		for(Thread t : threads)
-			t.join();
+		}
 		System.out.println("Best Recipes:");
 		bestRec.forEach((k, v) -> System.out.printf("%27s: %s%n", k, v.name));
 	}
