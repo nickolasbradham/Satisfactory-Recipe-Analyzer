@@ -1,5 +1,8 @@
-package nbradham.satisPlanner;
+package nbradham.satisAnalize;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,15 +11,15 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Scanner;
 
-final class Planner {
+final class Analyzer {
 
 	private static final String DELIM = "\t|\r*\n";
 
 	private final Queue<String> procQue = new LinkedList<>();
 	private final HashSet<String> qHash = new HashSet<>();
 
-	private void start() throws InterruptedException {
-		Scanner scan = new Scanner(Planner.class.getResourceAsStream("/recipes.tsv")).useDelimiter(DELIM);
+	private void start() throws InterruptedException, IOException {
+		Scanner scan = new Scanner(Analyzer.class.getResourceAsStream("/recipes.tsv")).useDelimiter(DELIM);
 		scan.nextLine();
 		HashMap<String, Recipe[]> recipesByIn = new HashMap<>();
 		HashMap<String, Float> weights = new HashMap<>();
@@ -42,7 +45,7 @@ final class Planner {
 		scan.close();
 		System.out.println("Recipies by input:");
 		recipesByIn.forEach((key, val) -> System.out.printf("\t%27s: %s%n", key, Arrays.toString(val)));
-		scan = new Scanner(Planner.class.getResourceAsStream("/machines.tsv")).useDelimiter(DELIM);
+		scan = new Scanner(Analyzer.class.getResourceAsStream("/machines.tsv")).useDelimiter(DELIM);
 		scan.nextLine();
 		HashMap<String, Short> machPow = new HashMap<>();
 		while (scan.hasNextLine()) {
@@ -52,7 +55,7 @@ final class Planner {
 		}
 		scan.close();
 		System.out.printf("Machines: %s%n", machPow);
-		scan = new Scanner(Planner.class.getResourceAsStream("/rates.tsv")).useDelimiter(DELIM);
+		scan = new Scanner(Analyzer.class.getResourceAsStream("/rates.tsv")).useDelimiter(DELIM);
 		scan.nextLine();
 		while (scan.hasNextLine()) {
 			String item = scan.next();
@@ -95,8 +98,9 @@ final class Planner {
 					System.out.printf("Weights: %s%n", weights);
 				}
 		}
-		System.out.println("Best Recipes:");
-		bestRec.forEach((k, v) -> System.out.printf("%27s: %s%n", k, v.name));
+		PrintWriter writer = new PrintWriter(new FileWriter("Best Recipes.txt"));
+		bestRec.forEach((k, v) -> writer.printf("%27s: %40s (%s > %s > %s)%n", k, v.name, v.ins, v.machine, v.outs));
+		writer.close();
 	}
 
 	private void forceToQueue(String item) {
@@ -115,8 +119,8 @@ final class Planner {
 		return map;
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		new Planner().start();
+	public static void main(String[] args) throws InterruptedException, IOException {
+		new Analyzer().start();
 	}
 
 	private static final record Recipe(String name, HashMap<String, Float> ins, String machine,
