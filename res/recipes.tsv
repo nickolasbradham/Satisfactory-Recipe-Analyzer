@@ -18,7 +18,7 @@ Alternate: Electromagnetic Connection Rod	8xStator, 4xHigh-Speed Connector	Assem
 Alternate: Encased Industrial Pipe	24xSteel Pipe, 20xConcrete	Assembler	4xEncased Industrial Beam
 Alternate: Fine Black Powder	7.5xSulfur, 15xCompacted Coal	Assembler	45xBlack Powder
 Alternate: Fine Concrete	15xSilica, 60xLimestone	Assembler	50xConcrete
-Alternate: Fused Quickwire	7.5xQuickwire, 37.5xCopper Ingot	Assembler	90xQuickwire
+Alternate: Fused Quickwire	7.5xCaterium Ingot, 37.5xCopper Ingot	Assembler	90xQuickwire
 Alternate: Fused Wire	12xCopper Ingot, 3xCaterium Ingot	Assembler	90xWire
 Alternate: Heat Exchanger	30xAluminum Casing, 30xRubber	Assembler	10xHeat Sink
 Alternate: Insulated Cable	45xWire, 30xRubber	Assembler	100xCable
