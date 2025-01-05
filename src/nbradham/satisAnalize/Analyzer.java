@@ -25,6 +25,7 @@ final class Analyzer {
 		HashMap<String, Float> weights = new HashMap<>();
 		while (scan.hasNextLine()) {
 			Recipe recipe = new Recipe(scan.next(), parseList(scan.next()), scan.next(), parseList(scan.next()));
+			scan.next();
 			recipe.ins.keySet().forEach(o -> {
 				Recipe[] recipes = recipesByIn.get(o);
 				if (recipes == null)
