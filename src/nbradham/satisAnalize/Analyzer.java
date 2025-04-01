@@ -74,7 +74,7 @@ final class Analyzer {
 		private int weight;
 
 		public Item() {
-			this(-1);
+			this(Integer.MAX_VALUE);
 		}
 
 		private Item(int initialWeight) {
