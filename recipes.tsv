@@ -105,7 +105,7 @@ Alternate: Stitched Iron Plate	18.75xIron Plate, 37.5xWire	Assembler	5.625xReinf
 Alternate: Super-State Computer	7.2xComputer, 2.4xElectromagnetic Control Rod, 24xBattery, 60xWire	Manufacturer	2.4xSupercomputer
 Alternate: Tempered Caterium Ingot	45xCaterium Ore, 15xPetroleum Coke	Foundry	22.5xCaterium Ingot
 Alternate: Tempered Copper Ingot	25xCopper Ore, 40xPetroleum Coke	Foundry	60xCopper Ingot
-Alternate: Turbo Blend Fuel	15xFuel, 30xHeavy Oil Residue, 22.5xSufur, 22.5xPetroleum Coke	Blender	45xTurbofuel
+Alternate: Turbo Blend Fuel	15xFuel, 30xHeavy Oil Residue, 22.5xSulfur, 22.5xPetroleum Coke	Blender	45xTurbofuel
 Alternate: Turbo Diamonds	600xCoal, 40xPackaged Turbofuel	Particle Accelerator	60xDiamonds
 Alternate: Turbo Electric Motor	6.562xMotor, 8.438xRadio Control Unit, 4.688xElectromagnetic Control Rod, 6.562xRotor	Manufacturer	2.812xTurbo Motor
 Alternate: Turbo Heavy Fuel	37.5xHeavy Oil Residue, 30xCompacted Coal	Refinery	30xTurbofuel
@@ -256,14 +256,14 @@ Thermal Propulsion Rocket	2.5xModular Engine, 1xTurbo Motor, 3xCooling System, 1
 Time Crystal	12xDiamonds	Converter	6xTime Crystal
 Turbo Motor	7.5xCooling System, 3.75xRadio Control Unit, 7.5xMotor, 45xRubber	Manufacturer	1.875xTurbo Motor
 Turbo Rifle Ammo	125xRifle Ammo, 15xAluminum Casing, 15xTurbo Fuel	Blender	250xTurbo Rifle Ammo
-Turbo Rifle Ammo	125xRifle Ammo, 15xAluminum Casing, 15xPackaged Turbo Fuel	Manufacturer	250xTurbo Rifle Ammo
+Turbo Rifle Ammo	125xRifle Ammo, 15xAluminum Casing, 15xPackaged Turbofuel	Manufacturer	250xTurbo Rifle Ammo
 Turbofuel	22.5xFuel, 15xCompacted Coal	Refinery	18.75xTurbofuel
 Unpackaged Alumina Solution	120xPackaged Alumina Solution	Packager	120xAlumina Solution, 120xEmpty Canister
 Unpackaged Fuel	60xPackaged Fuel	Packager	60xFuel, 60xEmpty Canister
 Unpackaged Heavy Oil Residue	20xPackaged Heavy Oil Residue	Packager	20xHeavy Oil Residue, 20xEmpty Canister
 Unpackaged Ionized Fuel	40xPackaged Ionized Fuel	Packager	80xIonized Fuel, 40xEmpty Fluid Tank
 Unpackaged Liquid Biofuel	60xPackaged Liquid Biofuel	Packager	60xLiquid Biofuel, 60xEmpty Canister
-Unpackaged Nitric Acid	20xPackaged Nitroc Acid	Packager	20xNitric Acid, 20xEmpty Fluid Tank
+Unpackaged Nitric Acid	20xPackaged Nitric Acid	Packager	20xNitric Acid, 20xEmpty Fluid Tank
 Unpackaged Nitrogen Gas	60xPackaged Nitrogen Gas	Packager	240xNitrogen Gas, 60xEmpty Fluid Tank
 Unpackaged Oil	60xPackaged Oil	Packager	60xCrude Oil, 60xEmpty Canister
 Unpackaged Rocket Fuel	60xPackaged Rocket Fuel	Packager	120xRocket Fuel, 60xEmpty Fluid Tank
