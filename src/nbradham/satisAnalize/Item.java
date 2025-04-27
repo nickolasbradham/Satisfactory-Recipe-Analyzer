@@ -1,29 +1,27 @@
 package nbradham.satisAnalize;
 
-import java.util.HashMap;
-
 final class Item {
 
-	static final Source NO_SOURCE = () -> Integer.MAX_VALUE;
+	static final Source NO_SOURCE = i -> Integer.MAX_VALUE;
 
-	private final HashMap<Item, Source> options = new HashMap<>();
+	private final Option[] options;
 
 	private Recipe[] consumers = new Recipe[0];
 
 	Item() {
-		options.put(null, new SourcePointer());
+		options = new Option[] { new Option(new SourcePointer()) };
 	}
 
-	final HashMap<Item, Source> getOptions() {
+	final Option[] getOptions() {
 		return options;
 	}
 
 	final Source getPrimarySource() {
-		return options.get(null);
+		return options[0].source;
 	}
 
 	final void setPrimarySource(final Source setSrc) {
-		((SourcePointer) options.get(null)).src = setSrc;
+		((SourcePointer) options[0].source).src = setSrc;
 	}
 
 	final Recipe[] getConsumers() {
@@ -39,8 +37,11 @@ final class Item {
 		private Source src = NO_SOURCE;
 
 		@Override
-		public int getWeight() {
-			return src.getWeight();
+		public float getWeight(Item targetItem) {
+			return src.getWeight(targetItem);
 		}
+	}
+
+	private static final record Option(Source source) {
 	}
 }

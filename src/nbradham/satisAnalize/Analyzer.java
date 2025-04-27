@@ -4,56 +4,40 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
 
 final class Analyzer {
 
-	private static final Source SRC_ZERO = () -> 0;
-
 	private final HashMap<String, Item> items = new HashMap<>();
-	private final HashSet<Item> queSet = new HashSet<>();
 	Node head = null, last = null;
 
 	private final void start() throws FileNotFoundException {
 		Scanner scan = createScanner("rates.tsv");
+		final HashMap<Item, Integer> rates = new HashMap<>();
 		int max = 0;
 		while (scan.hasNext()) {
-			final Item item = getItem(scan.next());
-			final int rate = scan.nextInt();
-			item.setPrimarySource(() -> rate);
+			final int rate;
+			rates.put(getItem(scan.next()), rate = scan.nextInt());
 			if (rate > max)
 				max = rate;
-			enqueue(item);
 		}
-		Node n = head;
-		while (n != null) {
-			final int calc = max / n.item.getPrimarySource().getWeight();
-			n.item.setPrimarySource(() -> calc);
-			n = n.next;
-		}
+		final int fMax = max;
+		rates.forEach((i, r) -> enqueue(new ExtractionProducer(i, fMax / r)));
 		scan = createScanner("recipes.tsv");
 		while (scan.hasNext()) {
-			Recipe r = new Recipe(scan.next(), parseItems(scan.next()), scan.next(), parseItems(scan.next()));
-			r.inputs().keySet().forEach(i -> {
+			Recipe recipe = new Recipe(scan.next(), parseItems(scan.next()), scan.next(), parseItems(scan.next()));
+			recipe.inputs().keySet().forEach(i -> {
 				final Recipe[] consumers = i.getConsumers();
 				final int l = consumers.length;
 				Recipe[] recs = Arrays.copyOf(consumers, l + 1);
-				recs[l] = r;
+				recs[l] = recipe;
 				i.setConsumers(recs);
 			});
-			if (r.inputs().size() == 0)
-				r.outputs().keySet().forEach(i -> {
-					i.setPrimarySource(SRC_ZERO);
-					enqueue(i);
-				});
+			if (recipe.inputs().size() == 0)
+				recipe.outputs().keySet().forEach(i -> enqueue(new RecipeProducer(recipe, new HashMap<>())));
 		}
 		while (head != null) {
-			head.item.getOptions().forEach((k, v) -> {
-				for (Recipe r : head.item.getConsumers()) {
-					// TODO Hmmm...
-				}
-			});
+			// TODO continue.
 			head = head.next;
 		}
 	}
@@ -75,15 +59,12 @@ final class Analyzer {
 		return i;
 	}
 
-	private final void enqueue(Item item) {
-		if (!queSet.contains(item)) {
-			queSet.add(item);
-			final Node n = new Node(item);
-			if (head == null)
-				last = head = n;
-			else
-				last = last.next = n;
-		}
+	private final void enqueue(Source item) {
+		final Node n = new Node(item);
+		if (head == null)
+			last = head = n;
+		else
+			last = last.next = n;
 	}
 
 	private static final Scanner createScanner(final String filename) throws FileNotFoundException {
@@ -95,11 +76,11 @@ final class Analyzer {
 	}
 
 	private static final class Node {
-		private final Item item;
+		private final Source src;
 		private Node next;
 
-		private Node(Item setItem) {
-			item = setItem;
+		private Node(Source source) {
+			src = source;
 		}
 	}
 }
