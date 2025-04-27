@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 final class Analyzer {
 
+	private static final Source SRC_ZERO = () -> 0;
+
 	private final HashMap<String, Item> items = new HashMap<>();
 	private final HashSet<Item> queSet = new HashSet<>();
 	Node head = null, last = null;
@@ -17,31 +19,42 @@ final class Analyzer {
 		Scanner scan = createScanner("rates.tsv");
 		int max = 0;
 		while (scan.hasNext()) {
-			final Item item = getOrCreateItem(scan.next());
-			final int tMax = item.weight = scan.nextInt();
-			if (tMax > max)
-				max = tMax;
+			final Item item = getItem(scan.next());
+			final int rate = scan.nextInt();
+			item.setPrimarySource(() -> rate);
+			if (rate > max)
+				max = rate;
 			enqueue(item);
 		}
 		Node n = head;
 		while (n != null) {
-			n.item.weight = max / n.item.weight;
+			final int calc = max / n.item.getPrimarySource().getWeight();
+			n.item.setPrimarySource(() -> calc);
 			n = n.next;
 		}
 		scan = createScanner("recipes.tsv");
 		while (scan.hasNext()) {
 			Recipe r = new Recipe(scan.next(), parseItems(scan.next()), scan.next(), parseItems(scan.next()));
-			r.inputs.keySet().forEach(i -> {
-				final int l = i.consumers.length;
-				Recipe[] recs = Arrays.copyOf(i.consumers, l + 1);
+			r.inputs().keySet().forEach(i -> {
+				final Recipe[] consumers = i.getConsumers();
+				final int l = consumers.length;
+				Recipe[] recs = Arrays.copyOf(consumers, l + 1);
 				recs[l] = r;
-				i.consumers = recs;
+				i.setConsumers(recs);
 			});
-			if (r.inputs.size() == 0)
-				r.outputs.keySet().forEach(i -> {
-					i.weight = 0;
+			if (r.inputs().size() == 0)
+				r.outputs().keySet().forEach(i -> {
+					i.setPrimarySource(SRC_ZERO);
 					enqueue(i);
 				});
+		}
+		while (head != null) {
+			head.item.getOptions().forEach((k, v) -> {
+				for (Recipe r : head.item.getConsumers()) {
+					// TODO Hmmm...
+				}
+			});
+			head = head.next;
 		}
 	}
 
@@ -50,12 +63,12 @@ final class Analyzer {
 		if (!parse.isBlank())
 			for (final String split : parse.split(", ")) {
 				final int x = split.indexOf('x');
-				map.put(getOrCreateItem(split.substring(x + 1)), Float.parseFloat(split.substring(0, x)));
+				map.put(getItem(split.substring(x + 1)), Float.parseFloat(split.substring(0, x)));
 			}
 		return map;
 	}
 
-	private final Item getOrCreateItem(String name) {
+	private final Item getItem(String name) {
 		Item i = items.get(name);
 		if (i == null)
 			items.put(name, i = new Item());
@@ -81,10 +94,6 @@ final class Analyzer {
 		new Analyzer().start();
 	}
 
-	private static final record Recipe(String name, HashMap<Item, Float> inputs, String machine,
-			HashMap<Item, Float> outputs) {
-	}
-
 	private static final class Node {
 		private final Item item;
 		private Node next;
@@ -92,10 +101,5 @@ final class Analyzer {
 		private Node(Item setItem) {
 			item = setItem;
 		}
-	}
-
-	private static final class Item {
-		private Recipe[] consumers = new Recipe[0];
-		private int weight = -1;
 	}
 }
