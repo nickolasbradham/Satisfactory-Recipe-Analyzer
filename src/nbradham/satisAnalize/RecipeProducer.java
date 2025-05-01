@@ -8,9 +8,10 @@ final record RecipeProducer(Recipe recipe, HashMap<Item, Source> sources) implem
 	@Override
 	public float getWeight(Item targetItem) {
 		int sum = 0;
+		HashMap<Item, Float> inputs = recipe.inputs();
 		for (Entry<Item, Source> entry : sources.entrySet()) {
 			Item item = entry.getKey();
-			sum += sources.get(item).getWeight(item) * recipe.inputs().get(item);
+			sum += sources.get(item).getWeight(item) * inputs.get(item);
 		}
 		return sum / recipe.outputs().get(targetItem);
 	}
