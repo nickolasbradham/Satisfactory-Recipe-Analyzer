@@ -61,10 +61,7 @@ final class Analyzer {
 
 	private final void enqueue(Source item) {
 		final Node n = new Node(item);
-		if (head == null)
-			last = head = n;
-		else
-			last = last.next = n;
+		last = head == null ? head = n : (last.next = n);
 	}
 
 	private static final Scanner createScanner(final String filename) throws FileNotFoundException {
