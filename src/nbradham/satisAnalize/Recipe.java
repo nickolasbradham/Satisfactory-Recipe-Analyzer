@@ -2,5 +2,5 @@ package nbradham.satisAnalize;
 
 import java.util.HashMap;
 
-public record Recipe(String name, HashMap<Item, Float> inputs, String machine, HashMap<Item, Float> outputs) {
+record Recipe(String name, HashMap<String, Float> inputs, String machine, HashMap<String, Float> outputs) {
 }

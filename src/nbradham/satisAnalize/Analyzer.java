@@ -2,90 +2,53 @@ package nbradham.satisAnalize;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import nbradham.satisAnalize.sources.ExtractionProducer;
-import nbradham.satisAnalize.sources.RecipeProducer;
-import nbradham.satisAnalize.sources.AbstractSource;
-
 final class Analyzer {
 
-	private final HashMap<String, Item> items = new HashMap<>();
-	Node head = null, last = null;
-
-	private final void start() throws FileNotFoundException {
-		Scanner scan = createScanner("rates.tsv");
-		final HashMap<Item, Integer> rates = new HashMap<>();
-		int max = 0;
-		while (scan.hasNext()) {
-			final int rate;
-			rates.put(getItem(scan.next()), rate = scan.nextInt());
-			if (rate > max)
-				max = rate;
-		}
-		final int fMax = max;
-		rates.forEach((i, r) -> enqueue(new ExtractionProducer(i, fMax / r)));
-		scan = createScanner("recipes.tsv");
-		while (scan.hasNext()) {
-			final Recipe recipe = new Recipe(scan.next(), parseItems(scan.next()), scan.next(),
-					parseItems(scan.next()));
-			if (recipe.inputs().isEmpty())
-				recipe.outputs().keySet().forEach(i -> enqueue(new RecipeProducer(recipe, new HashMap<>())));
-			else
-				recipe.inputs().keySet().forEach(i -> i.addConsumer(recipe));
-		}
-		while (head != null) {
-			final HashMap<Item, Float> weights = head.src.calcOutWeights();
-			weights.forEach((out, weight) -> {
-				if (out.getPrimarySource().getWeight(out) > weight)
-					out.setPrimarySource(head.src);
-				weights.forEach((byOut, byWeight) -> {
-					if(byOut != out) {
-						//TODO Ponder this.
-					}
-				});
-			});
-			head = head.next;
-		}
-	}
-
-	private final HashMap<Item, Float> parseItems(final String parse) {
-		final HashMap<Item, Float> map = new HashMap<>();
-		if (!parse.isBlank())
-			for (final String split : parse.split(", ")) {
+	private static final HashMap<String, Float> parseItems(String parse) {
+		final HashMap<String, Float> map = new HashMap<>();
+		if (!parse.isEmpty())
+			for (String split : parse.split(", ")) {
 				final int x = split.indexOf('x');
-				map.put(getItem(split.substring(x + 1)), Float.parseFloat(split.substring(0, x)));
+				map.put(split.substring(x + 1), Float.parseFloat(split.substring(0, x)));
 			}
 		return map;
 	}
 
-	private final Item getItem(final String name) {
-		Item i = items.get(name);
-		if (i == null)
-			items.put(name, i = new Item());
-		return i;
-	}
-
-	private final void enqueue(final AbstractSource item) {
-		final Node n = new Node(item);
-		last = head == null ? head = n : (last.next = n);
-	}
-
-	private static final Scanner createScanner(final String filename) throws FileNotFoundException {
-		return new Scanner(new File(filename)).useDelimiter("\t|\r*\n").skip(".*\r*\n");
+	private static final Scanner createScanner(String filepath) throws FileNotFoundException {
+		return new Scanner(new File(filepath)).useDelimiter("\t|\r*\n").skip(".*\r*\n");
 	}
 
 	public static final void main(final String[] args) throws FileNotFoundException {
-		new Analyzer().start();
-	}
-
-	private static final class Node {
-		private final AbstractSource src;
-		private Node next;
-
-		private Node(AbstractSource source) {
-			src = source;
+		Scanner scan = createScanner("recipes.tsv");
+		final HashMap<String, ArrayList<Recipe>> recipesByOut = new HashMap<>();
+		while (scan.hasNext()) {
+			final Recipe recipe = new Recipe(scan.next(), parseItems(scan.next()), scan.next(),
+					parseItems(scan.next()));
+			recipe.outputs().keySet().forEach(out -> {
+				ArrayList<Recipe> recipes = recipesByOut.get(out);
+				if (recipes == null)
+					recipesByOut.put(out, recipes = new ArrayList<>());
+				recipes.add(recipe);
+			});
 		}
+		scan.close();
+		scan = createScanner("rates.tsv");
+		final HashMap<String, Integer> weights = new HashMap<>();
+		int max = Integer.MIN_VALUE;
+		while (scan.hasNext()) {
+			final int scanWeight;
+			weights.put(scan.next(), scanWeight = scan.nextInt());
+			if (scanWeight > max)
+				max = scanWeight;
+		}
+		final int finMax = max;
+		weights.forEach((item, rate) -> weights.put(item, finMax / rate));
+		recipesByOut.keySet().forEach(out ->{
+			//TODO Code this.
+		});
 	}
 }
