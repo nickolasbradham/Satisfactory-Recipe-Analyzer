@@ -2,9 +2,12 @@ package nbradham.satisAnalize;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import nbradham.satisAnalize.sources.ExtractionProducer;
+import nbradham.satisAnalize.sources.RecipeProducer;
+import nbradham.satisAnalize.sources.Source;
 
 final class Analyzer {
 
@@ -25,16 +28,12 @@ final class Analyzer {
 		rates.forEach((i, r) -> enqueue(new ExtractionProducer(i, fMax / r)));
 		scan = createScanner("recipes.tsv");
 		while (scan.hasNext()) {
-			Recipe recipe = new Recipe(scan.next(), parseItems(scan.next()), scan.next(), parseItems(scan.next()));
-			recipe.inputs().keySet().forEach(i -> {
-				final Recipe[] consumers = i.getConsumers();
-				final int l = consumers.length;
-				Recipe[] recs = Arrays.copyOf(consumers, l + 1);
-				recs[l] = recipe;
-				i.setConsumers(recs);
-			});
-			if (recipe.inputs().size() == 0)
+			final Recipe recipe = new Recipe(scan.next(), parseItems(scan.next()), scan.next(),
+					parseItems(scan.next()));
+			if (recipe.inputs().isEmpty())
 				recipe.outputs().keySet().forEach(i -> enqueue(new RecipeProducer(recipe, new HashMap<>())));
+			else
+				recipe.inputs().keySet().forEach(i -> i.addConsumer(recipe));
 		}
 		while (head != null) {
 			// TODO continue.
@@ -52,14 +51,14 @@ final class Analyzer {
 		return map;
 	}
 
-	private final Item getItem(String name) {
+	private final Item getItem(final String name) {
 		Item i = items.get(name);
 		if (i == null)
 			items.put(name, i = new Item());
 		return i;
 	}
 
-	private final void enqueue(Source item) {
+	private final void enqueue(final Source item) {
 		final Node n = new Node(item);
 		last = head == null ? head = n : (last.next = n);
 	}
