@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import nbradham.satisAnalize.sources.ExtractionProducer;
 import nbradham.satisAnalize.sources.RecipeProducer;
-import nbradham.satisAnalize.sources.Source;
+import nbradham.satisAnalize.sources.AbstractSource;
 
 final class Analyzer {
 
@@ -36,7 +36,16 @@ final class Analyzer {
 				recipe.inputs().keySet().forEach(i -> i.addConsumer(recipe));
 		}
 		while (head != null) {
-			// TODO continue.
+			final HashMap<Item, Float> weights = head.src.calcOutWeights();
+			weights.forEach((out, weight) -> {
+				if (out.getPrimarySource().getWeight(out) > weight)
+					out.setPrimarySource(head.src);
+				weights.forEach((byOut, byWeight) -> {
+					if(byOut != out) {
+						//TODO Ponder this.
+					}
+				});
+			});
 			head = head.next;
 		}
 	}
@@ -58,7 +67,7 @@ final class Analyzer {
 		return i;
 	}
 
-	private final void enqueue(final Source item) {
+	private final void enqueue(final AbstractSource item) {
 		final Node n = new Node(item);
 		last = head == null ? head = n : (last.next = n);
 	}
@@ -72,10 +81,10 @@ final class Analyzer {
 	}
 
 	private static final class Node {
-		private final Source src;
+		private final AbstractSource src;
 		private Node next;
 
-		private Node(Source source) {
+		private Node(AbstractSource source) {
 			src = source;
 		}
 	}

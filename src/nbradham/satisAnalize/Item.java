@@ -3,10 +3,9 @@ package nbradham.satisAnalize;
 import java.util.Arrays;
 
 import nbradham.satisAnalize.sources.Source;
+import nbradham.satisAnalize.sources.SourcePointer;
 
 public final class Item {
-
-	static final Source NO_SOURCE = i -> Integer.MAX_VALUE;
 
 	private final Source[] options;
 
@@ -21,11 +20,11 @@ public final class Item {
 	}
 
 	final Source getPrimarySource() {
-		return ((SourcePointer) options[0]).src;
+		return ((SourcePointer) options[0]).getSource();
 	}
 
 	final void setPrimarySource(final Source setSrc) {
-		((SourcePointer) options[0]).src = setSrc;
+		((SourcePointer) options[0]).setSource(setSrc);
 	}
 
 	final Recipe[] getConsumers() {
@@ -37,15 +36,5 @@ public final class Item {
 		final Recipe[] recs = Arrays.copyOf(consumers, l + 1);
 		recs[l] = recipe;
 		consumers = recs;
-	}
-
-	private static final class SourcePointer implements Source {
-
-		private Source src = NO_SOURCE;
-
-		@Override
-		public final float getWeight(Item targetItem) {
-			return src.getWeight(targetItem);
-		}
 	}
 }

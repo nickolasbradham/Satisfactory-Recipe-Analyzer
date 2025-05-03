@@ -2,10 +2,9 @@ package nbradham.satisAnalize.sources;
 
 import nbradham.satisAnalize.Item;
 
-public final record ExtractionProducer(Item item, int weight) implements Source {
+public final class ExtractionProducer extends AbstractSource {
 
-	@Override
-	public final float getWeight(Item targetItem) {
-		return weight;
+	public ExtractionProducer(final Item item, final float weight) {
+		weights.put(item, weight);
 	}
 }

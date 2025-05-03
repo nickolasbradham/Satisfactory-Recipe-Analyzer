@@ -2,8 +2,6 @@ package nbradham.satisAnalize.sources;
 
 import nbradham.satisAnalize.Item;
 
-@FunctionalInterface
-public interface Source {
-
+sealed public interface Source permits AbstractSource, SourcePointer {
 	float getWeight(Item targetOutput);
 }
