@@ -1,30 +1,27 @@
 package nbradham.satisAnalize;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import nbradham.satisAnalize.sources.Source;
 import nbradham.satisAnalize.sources.SourcePointer;
 
 public final class Item {
 
-	private final Source[] options;
+	private final HashMap<Item, Source> optionsByByprod = new HashMap<>();
 
 	private Recipe[] consumers = new Recipe[0];
 
 	Item() {
-		options = new Source[] { new SourcePointer() };
-	}
-
-	final Source[] getOptions() {
-		return options;
+		optionsByByprod.put(null, new SourcePointer());
 	}
 
 	final Source getPrimarySource() {
-		return ((SourcePointer) options[0]).getSource();
+		return ((SourcePointer) optionsByByprod.get(null)).getSource();
 	}
 
 	final void setPrimarySource(final Source setSrc) {
-		((SourcePointer) options[0]).setSource(setSrc);
+		((SourcePointer) optionsByByprod.get(null)).setSource(setSrc);
 	}
 
 	final Recipe[] getConsumers() {
