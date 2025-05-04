@@ -50,33 +50,34 @@ final class Analyzer {
 		weights.forEach((item, rate) -> weights.put(item, finMax / rate));
 		recipesByOut.forEach((out, recipes) -> {
 			final ArrayList<ItemSystem> itemSystems = new ArrayList<>();
-			final HashMap<String, HashSet<ItemConsumer>> consumption = new HashMap<>();
-			final HashMap<String, HashSet<ItemProducer>> production = new HashMap<>(), byproduction = new HashMap<>();
-			final HashSet<ItemConsumer> outConsume = new HashSet<>();
+			final HashMap<String, HashSet<ItemConsumer>> consumersByItem = new HashMap<>();
+			final HashMap<String, HashSet<ItemProducer>> producersByItem = new HashMap<>(),
+					byproducersByItem = new HashMap<>();
 			final ItemConsumer output = new ProductionOutput(out);
 			itemSystems.add(output);
+			final HashSet<ItemConsumer> outConsume = new HashSet<>();
 			outConsume.add(output);
-			consumption.put(out, outConsume);
+			consumersByItem.put(out, outConsume);
 			recipes.forEach(recipe -> {
 				final ArrayList<ItemSystem> nextItemSystems = new ArrayList<>();
-				final HashMap<String, HashSet<ItemConsumer>> nextConsumption = new HashMap<>();
-				consumption.keySet().forEach(item -> nextConsumption.put(item, new HashSet<>()));
-				final HashMap<String, HashSet<ItemProducer>> nextProduction = new HashMap<>(),
-						nextByproduction = new HashMap<>();
-				production.keySet().forEach(item -> nextProduction.put(item, new HashSet<>()));
-				byproduction.keySet().forEach(item -> nextByproduction.put(item, new HashSet<>()));
+				final HashMap<String, HashSet<ItemConsumer>> nextConsumersByItem = new HashMap<>();
+				consumersByItem.keySet().forEach(item -> nextConsumersByItem.put(item, new HashSet<>()));
+				final HashMap<String, HashSet<ItemProducer>> nextProducersByItem = new HashMap<>(),
+						nextByproducersByItem = new HashMap<>();
+				producersByItem.keySet().forEach(item -> nextProducersByItem.put(item, new HashSet<>()));
+				byproducersByItem.keySet().forEach(item -> nextByproducersByItem.put(item, new HashSet<>()));
 				itemSystems.forEach(sys -> {
 					ItemSystem copy = sys.copy();
 					nextItemSystems.add(copy);
 					if (sys instanceof ItemConsumer)
 						for (String in : ((ItemConsumer) sys).getInputs())
-							nextConsumption.get(in).add((ItemConsumer) sys);
+							nextConsumersByItem.get(in).add((ItemConsumer) sys);
 					if (sys instanceof ItemProducer)
 						for (String prod : ((ItemProducer) sys).getOutputs())
-							if (production.get(prod).contains(sys))
-								nextProduction.get(prod).add((ItemProducer) sys);
+							if (producersByItem.get(prod).contains(sys))
+								nextProducersByItem.get(prod).add((ItemProducer) copy);
 							else
-								nextByproduction.get(prod).add((ItemProducer) sys);
+								nextByproducersByItem.get(prod).add((ItemProducer) copy);
 				});
 			});
 		});
