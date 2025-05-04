@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 final class Analyzer {
@@ -47,8 +48,37 @@ final class Analyzer {
 		}
 		final int finMax = max;
 		weights.forEach((item, rate) -> weights.put(item, finMax / rate));
-		recipesByOut.keySet().forEach(out ->{
-			//TODO Code this.
+		recipesByOut.forEach((out, recipes) -> {
+			final ArrayList<ItemSystem> itemSystems = new ArrayList<>();
+			final HashMap<String, HashSet<ItemConsumer>> consumption = new HashMap<>();
+			final HashMap<String, HashSet<ItemProducer>> production = new HashMap<>(), byproduction = new HashMap<>();
+			final HashSet<ItemConsumer> outConsume = new HashSet<>();
+			final ItemConsumer output = new ProductionOutput(out);
+			itemSystems.add(output);
+			outConsume.add(output);
+			consumption.put(out, outConsume);
+			recipes.forEach(recipe -> {
+				final ArrayList<ItemSystem> nextItemSystems = new ArrayList<>();
+				final HashMap<String, HashSet<ItemConsumer>> nextConsumption = new HashMap<>();
+				consumption.keySet().forEach(item -> nextConsumption.put(item, new HashSet<>()));
+				final HashMap<String, HashSet<ItemProducer>> nextProduction = new HashMap<>(),
+						nextByproduction = new HashMap<>();
+				production.keySet().forEach(item -> nextProduction.put(item, new HashSet<>()));
+				byproduction.keySet().forEach(item -> nextByproduction.put(item, new HashSet<>()));
+				itemSystems.forEach(sys -> {
+					ItemSystem copy = sys.copy();
+					nextItemSystems.add(copy);
+					if (sys instanceof ItemConsumer)
+						for (String in : ((ItemConsumer) sys).getInputs())
+							nextConsumption.get(in).add((ItemConsumer) sys);
+					if (sys instanceof ItemProducer)
+						for (String prod : ((ItemProducer) sys).getOutputs())
+							if (production.get(prod).contains(sys))
+								nextProduction.get(prod).add((ItemProducer) sys);
+							else
+								nextByproduction.get(prod).add((ItemProducer) sys);
+				});
+			});
 		});
 	}
 }
