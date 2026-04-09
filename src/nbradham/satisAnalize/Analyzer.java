@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
 
 final class Analyzer {
@@ -48,38 +47,6 @@ final class Analyzer {
 		}
 		final int finMax = max;
 		weights.forEach((item, rate) -> weights.put(item, finMax / rate));
-		recipesByOut.forEach((out, recipes) -> {
-			final ArrayList<ItemSystem> itemSystems = new ArrayList<>();
-			final HashMap<String, HashSet<ItemConsumer>> consumersByItem = new HashMap<>();
-			final HashMap<String, HashSet<ItemProducer>> producersByItem = new HashMap<>(),
-					byproducersByItem = new HashMap<>();
-			final ItemConsumer output = new ProductionOutput(out);
-			itemSystems.add(output);
-			final HashSet<ItemConsumer> outConsume = new HashSet<>();
-			outConsume.add(output);
-			consumersByItem.put(out, outConsume);
-			recipes.forEach(recipe -> {
-				final ArrayList<ItemSystem> nextItemSystems = new ArrayList<>();
-				final HashMap<String, HashSet<ItemConsumer>> nextConsumersByItem = new HashMap<>();
-				consumersByItem.keySet().forEach(item -> nextConsumersByItem.put(item, new HashSet<>()));
-				final HashMap<String, HashSet<ItemProducer>> nextProducersByItem = new HashMap<>(),
-						nextByproducersByItem = new HashMap<>();
-				producersByItem.keySet().forEach(item -> nextProducersByItem.put(item, new HashSet<>()));
-				byproducersByItem.keySet().forEach(item -> nextByproducersByItem.put(item, new HashSet<>()));
-				itemSystems.forEach(sys -> {
-					ItemSystem copy = sys.copy();
-					nextItemSystems.add(copy);
-					if (sys instanceof ItemConsumer)
-						for (String in : ((ItemConsumer) sys).getInputs())
-							nextConsumersByItem.get(in).add((ItemConsumer) sys);
-					if (sys instanceof ItemProducer)
-						for (String prod : ((ItemProducer) sys).getOutputs())
-							if (producersByItem.get(prod).contains(sys))
-								nextProducersByItem.get(prod).add((ItemProducer) copy);
-							else
-								nextByproducersByItem.get(prod).add((ItemProducer) copy);
-				});
-			});
-		});
+		// TODO: Continue code.
 	}
 }
